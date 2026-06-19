@@ -221,7 +221,7 @@ section {
 }
 
 .hero p.tag {
-  margin-top: 1.4rem;
+  margin: 1.4rem auto 0; /* centre the max-width block */
   max-width: 32ch;
   font-size: clamp(1rem, 1.5vw, 1.25rem);
   color: var(--cream-dim);
