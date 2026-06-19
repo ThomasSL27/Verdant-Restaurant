@@ -6,4 +6,8 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://verdant.restaurant',
   integrations: [sitemap()],
+  build: {
+    // Inline page CSS into the HTML so it isn't a render-blocking request.
+    inlineStylesheets: 'always',
+  },
 });
