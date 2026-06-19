@@ -106,5 +106,30 @@ const schema = {
       <slot />
     </main>
     <Footer />
+
+    <script>
+      // Tiny, cheap scroll-reveal. Marks <html> as JS-capable so the
+      // reveal hidden state only applies when this can run (no-JS = visible).
+      document.documentElement.classList.add("js");
+      const revealEls = document.querySelectorAll(".reveal");
+      if (revealEls.length) {
+        if (!("IntersectionObserver" in window)) {
+          revealEls.forEach((el) => el.classList.add("in"));
+        } else {
+          const io = new IntersectionObserver(
+            (entries) => {
+              for (const e of entries) {
+                if (e.isIntersecting) {
+                  e.target.classList.add("in");
+                  io.unobserve(e.target);
+                }
+              }
+            },
+            { threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+          );
+          revealEls.forEach((el) => io.observe(el));
+        }
+      }
+    </script>
   </body>
 </html>
