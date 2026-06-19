@@ -1,0 +1,188 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const dishes = [
+  {
+    title: "Charred Heirloom",
+    tag: "Garden",
+    img: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Smoked Plate",
+    tag: "Fire",
+    img: "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80",
+  },
+  {
+    title: "Forest Mushroom",
+    tag: "Earth",
+    img: "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=900&q=80",
+  },
+];
+
+// NOTE: placeholder copy only — replace with real, verifiable guest reviews
+// before launch (publishing fabricated testimonials is unlawful).
+const reviews = [
+  {
+    stars: "★★★★★",
+    quote: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
+    who: "Lorem Ipsum",
+  },
+  {
+    stars: "★★★★★",
+    quote: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo.",
+    who: "Dolor Sit",
+  },
+  {
+    stars: "★★★★★",
+    quote: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+    who: "Amet Consectetur",
+  },
+];
+
+const insta = [
+  "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=400&q=70",
+  "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=400&q=70",
+  "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=400&q=70",
+  "https://images.unsplash.com/photo-1432139555190-58524dae6a55?auto=format&fit=crop&w=400&q=70",
+  "https://images.unsplash.com/photo-1498654896293-37aacf113fd9?auto=format&fit=crop&w=400&q=70",
+  "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=400&q=70",
+];
+---
+
+<Layout
+  preloadImage="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2000&q=80"
+>
+  <!-- 3D fork + knife overlay -->
+  <canvas id="cutlery-canvas" aria-hidden="true"></canvas>
+
+  <!-- 1. HERO -->
+  <section class="hero" id="hero">
+    <span class="eyebrow">Farm · Fire · Season</span>
+    <h1>VERDANT</h1>
+    <p class="tag">
+      A table set by the land — wood-fired plates, foraged greens and a quiet
+      kind of luxury.
+    </p>
+    <div class="hero-ctas">
+      <a class="btn btn-solid lg" href="#reserve">Reserve a Table</a>
+      <a class="btn lg" href="/menu">View the Menu</a>
+    </div>
+    <span class="scroll-hint">Scroll</span>
+  </section>
+
+  <!-- Social proof / trust bar (CRO) -->
+  <div class="trust">
+    <div class="trust-item"><strong>4.9★</strong><span>2,100+ Reviews</span></div>
+    <div class="trust-item"><strong>Michelin</strong><span>Guide 2025</span></div>
+    <div class="trust-item"><strong>Est. 2016</strong><span>Portland, OR</span></div>
+    <div class="trust-item"><strong>100%</strong><span>Locally Sourced</span></div>
+  </div>
+
+  <!-- 2. PHILOSOPHY (cutlery flanks this text) -->
+  <section class="philosophy" id="philosophy">
+    <div class="inner">
+      <span class="eyebrow">Our Philosophy</span>
+      <h2>Rooted in the Season</h2>
+      <p>
+        Every dish begins in the soil. We cook with what the morning brings —
+        slow fire, honest produce, and a deep respect for the hands that grow
+        it. No shortcuts, only patience.
+      </p>
+      <div class="rule"></div>
+    </div>
+  </section>
+
+  <!-- 3. SIGNATURE PLATES -->
+  <section class="menu" id="dishes">
+    <div class="head">
+      <span class="eyebrow">The Table</span>
+      <h2>Signature Plates</h2>
+    </div>
+    <div class="grid">
+      {
+        dishes.map((d) => (
+          <article class="card">
+            <img src={d.img} alt={`${d.title} — ${d.tag}`} width="900" height="1125" loading="lazy" decoding="async" />
+            <div class="caption">
+              <span>{d.tag}</span>
+              <h3>{d.title}</h3>
+            </div>
+          </article>
+        ))
+      }
+    </div>
+    <div class="center-cta">
+      <a class="btn lg" href="/menu">See the Full Menu</a>
+    </div>
+  </section>
+
+  <!-- 4. TESTIMONIALS (social proof) -->
+  <section class="testimonials" id="reviews">
+    <span class="eyebrow">Testimonials</span>
+    <h2>In Their Words</h2>
+    <div class="quote-grid">
+      {
+        reviews.map((r) => (
+          <figure class="quote">
+            <div class="stars">{r.stars}</div>
+            <p>“{r.quote}”</p>
+            <figcaption class="who">{r.who}</figcaption>
+          </figure>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- 5. RESERVATION DETAILS (CRO) -->
+  <section class="reserve" id="visit">
+    <div class="reserve-grid">
+      <div class="reserve-info">
+        <span class="eyebrow">Plan Your Visit</span>
+        <h2>An evening, set aside</h2>
+        <p>
+          Tables are limited and most evenings sell out. Book ahead to secure
+          your seating — walk-ins welcome at the bar.
+        </p>
+        <div class="detail-list">
+          <div><span>Hours</span> Wed–Sun, from 5pm</div>
+          <div><span>Address</span> 14 Orchard Lane, Portland, OR</div>
+          <div><span>Phone</span> +1 (555) 0142</div>
+          <div><span>Dress</span> Smart casual</div>
+        </div>
+        <a class="btn btn-solid lg" href="tel:+15550142">Reserve a Table</a>
+      </div>
+      <div class="reserve-photo">
+        <img
+          src="https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=900&q=80"
+          alt="The candlelit dining room at Verdant"
+          width="900"
+          height="1125"
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. INSTAGRAM / SOCIAL (SMO) -->
+  <section class="insta">
+    <span class="eyebrow">Follow the Fire</span>
+    <h2>@verdant</h2>
+    <div class="insta-grid">
+      {
+        insta.map((src, i) => (
+          <a href="https://instagram.com" target="_blank" rel="noopener" aria-label={`View Verdant on Instagram (photo ${i + 1})`}>
+            <img src={src} alt="" width="400" height="400" loading="lazy" decoding="async" />
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <script>
+    // Load the 3D utensils only on larger screens.
+    if (!window.matchMedia("(max-width: 720px)").matches) {
+      import("../scripts/cutlery.js");
+    }
+  </script>
+</Layout>

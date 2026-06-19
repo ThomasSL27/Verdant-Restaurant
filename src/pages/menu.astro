@@ -1,0 +1,166 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const menu = {
+  starters: [
+    {
+      name: "Charred Heirloom Tomatoes",
+      desc: "Smoked stone fruit, basil oil, aged sherry, sourdough crumb.",
+      price: "$18",
+      tags: ["Vegan", "GF"],
+    },
+    {
+      name: "Foraged Mushroom Toast",
+      desc: "Wild mushrooms, garlic confit, thyme, cultured butter on levain.",
+      price: "$21",
+      tags: ["Vegetarian"],
+    },
+    {
+      name: "Hearth Bread & Whipped Lardo",
+      desc: "Wood-oven bread, smoked sea salt, rosemary honey.",
+      price: "$14",
+      tags: [],
+    },
+    {
+      name: "Oysters, Three Ways",
+      desc: "Mignonette, charred lemon, green apple granita. Half dozen.",
+      price: "$26",
+      tags: ["GF"],
+    },
+  ],
+  mains: [
+    {
+      name: "Fire-Roasted Heritage Carrot",
+      desc: "Carrot-top chimichurri, lentils, burnt honey, hazelnut.",
+      price: "$29",
+      tags: ["Vegan", "GF"],
+    },
+    {
+      name: "Cedar-Smoked Steelhead",
+      desc: "Day-boat steelhead, fennel, brown butter, foraged greens.",
+      price: "$38",
+      tags: ["GF"],
+    },
+    {
+      name: "Wood-Grilled Dry-Aged Ribeye",
+      desc: "45-day ribeye, bone-marrow jus, charred alliums, watercress.",
+      price: "$54",
+      tags: [],
+    },
+    {
+      name: "Ember Gnocchi",
+      desc: "Potato gnocchi, brown-butter sage, aged pecorino, black garlic.",
+      price: "$31",
+      tags: ["Vegetarian"],
+    },
+  ],
+  desserts: [
+    {
+      name: "Burnt Honey Custard",
+      desc: "Slow-set custard, smoked honey, sea salt, olive oil.",
+      price: "$15",
+      tags: ["GF"],
+    },
+    {
+      name: "Wood-Fired Stone Fruit",
+      desc: "Roasted seasonal fruit, brown-sugar oat crumble, crème fraîche.",
+      price: "$16",
+      tags: ["Vegetarian"],
+    },
+    {
+      name: "Dark Chocolate & Ember Cream",
+      desc: "70% chocolate ganache, smoked cream, cacao nib brittle.",
+      price: "$17",
+      tags: ["Vegan"],
+    },
+  ],
+};
+
+const tabs = [
+  { id: "starters", label: "Starters" },
+  { id: "mains", label: "Mains" },
+  { id: "desserts", label: "Desserts" },
+];
+---
+
+<Layout
+  title="Menu — Verdant | Starters, Mains & Desserts"
+  description="Explore the Verdant menu — wood-fired, farm-to-table starters, mains and desserts, sourced from local growers and cooked over open flame."
+>
+  <section class="menu-hero">
+    <span class="eyebrow">Wood-Fired · Seasonal</span>
+    <h1>The Menu</h1>
+    <p>Sourced from local growers each morning and cooked over open flame. Our
+      menu shifts with the season — here is what we're serving now.</p>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Menu categories">
+    {
+      tabs.map((t, i) => (
+        <button
+          class={`tab${i === 0 ? " active" : ""}`}
+          id={`tab-${t.id}`}
+          role="tab"
+          aria-selected={i === 0 ? "true" : "false"}
+          aria-controls={`panel-${t.id}`}
+          data-target={t.id}
+        >
+          {t.label}
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    tabs.map((t, i) => (
+      <div
+        class="menu-panel"
+        id={`panel-${t.id}`}
+        role="tabpanel"
+        aria-labelledby={`tab-${t.id}`}
+        tabindex="0"
+        hidden={i !== 0}
+      >
+        <h2 class="sr-only">{t.label}</h2>
+        {menu[t.id].map((item) => (
+          <article class="menu-item">
+            <div class="it-main">
+              <h3>{item.name}</h3>
+              <p>{item.desc}</p>
+              {item.tags.length > 0 && (
+                <div class="dietary">
+                  {item.tags.map((tag) => (
+                    <span>{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div class="price">{item.price}</div>
+          </article>
+        ))}
+      </div>
+    ))
+  }
+
+  <div class="center-cta menu-foot-cta">
+    <a class="btn btn-solid lg" href="/#reserve">Reserve a Table</a>
+  </div>
+
+  <script>
+    const tabs = document.querySelectorAll(".tab");
+    const panels = document.querySelectorAll(".menu-panel");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const target = tab.getAttribute("data-target");
+        tabs.forEach((t) => {
+          const active = t === tab;
+          t.classList.toggle("active", active);
+          t.setAttribute("aria-selected", active ? "true" : "false");
+        });
+        panels.forEach((p) => {
+          p.hidden = p.id !== `panel-${target}`;
+        });
+      });
+    });
+  </script>
+</Layout>

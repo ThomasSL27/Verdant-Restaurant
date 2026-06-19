@@ -1,0 +1,49 @@
+---
+const links = [
+  { href: "/#philosophy", label: "Story" },
+  { href: "/menu", label: "Menu" },
+  { href: "/contact", label: "Contact" },
+  { href: "/#visit", label: "Visit" },
+];
+---
+
+<header class="site-header">
+  <a class="brand" href="/">VERDANT</a>
+  <nav class="nav-links">
+    {links.map((l) => <a href={l.href}>{l.label}</a>)}
+  </nav>
+  <div class="header-end">
+    <a class="btn btn-solid sm reserve-desktop" href="/#reserve">Reserve</a>
+    <button class="burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu">
+  {links.map((l) => <a href={l.href}>{l.label}</a>)}
+  <a class="btn btn-solid" href="/#reserve">Reserve a Table</a>
+</div>
+
+<script>
+  const burger = document.querySelector(".burger");
+  const menu = document.getElementById("mobileMenu");
+
+  function setOpen(open) {
+    burger?.classList.toggle("open", open);
+    menu?.classList.toggle("open", open);
+    document.body.classList.toggle("menu-open", open);
+    burger?.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  burger?.addEventListener("click", () => {
+    setOpen(!menu?.classList.contains("open"));
+  });
+
+  menu?.querySelectorAll("a").forEach((a) => a.addEventListener("click", () => setOpen(false)));
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") setOpen(false);
+  });
+</script>

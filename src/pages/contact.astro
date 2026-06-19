@@ -1,0 +1,89 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout
+  title="Contact & Reservations — Verdant"
+  description="Get in touch with Verdant — reservations, private dining and general enquiries. 14 Orchard Lane, Portland, OR."
+>
+  <section class="menu-hero">
+    <span class="eyebrow">We'd Love to Hear From You</span>
+    <h1>Get in Touch</h1>
+    <p>Reservations, private dining, press or simply saying hello — send us a
+      note and we'll reply within one business day.</p>
+  </section>
+
+  <section class="contact">
+    <div class="contact-grid">
+      <!-- Form -->
+      <form class="form" id="contactForm" novalidate>
+        <div class="row">
+          <div class="field">
+            <label for="name">Name</label>
+            <input id="name" name="name" type="text" autocomplete="name" required />
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" required />
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" />
+          </div>
+          <div class="field">
+            <label for="topic">Topic</label>
+            <select id="topic" name="topic">
+              <option>Reservation</option>
+              <option>Private Dining</option>
+              <option>Press &amp; Media</option>
+              <option>General Enquiry</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" required></textarea>
+        </div>
+        <div>
+          <button class="btn btn-solid lg" type="submit">Send Message</button>
+          <p class="form-success" id="formSuccess">
+            Thank you — your message has been noted. We'll be in touch shortly.
+          </p>
+        </div>
+      </form>
+
+      <!-- Details -->
+      <aside class="contact-info">
+        <div class="block">
+          <h3>Visit</h3>
+          <p>14 Orchard Lane<br />Portland, OR 97204</p>
+        </div>
+        <div class="block">
+          <h3>Reservations</h3>
+          <a href="tel:+15550142">+1 (555) 0142</a>
+          <a href="mailto:hello@verdant.restaurant">hello@verdant.restaurant</a>
+        </div>
+        <div class="block">
+          <h3>Hours</h3>
+          <p>Wed – Fri · 5pm – 11pm</p>
+          <p>Sat – Sun · 4pm – 11pm</p>
+          <p>Mon – Tue · Closed</p>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <script>
+    const form = document.getElementById("contactForm");
+    const success = document.getElementById("formSuccess");
+    form?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!(form instanceof HTMLFormElement) || !form.reportValidity()) return;
+      // No backend wired yet — show confirmation and reset.
+      success?.classList.add("show");
+      form.reset();
+    });
+  </script>
+</Layout>
