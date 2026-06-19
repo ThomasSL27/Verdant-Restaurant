@@ -169,12 +169,18 @@ const HERO_ROT = 10;      // degrees, tilted outward in the hero
 const entrance = { s: 0 }; // pop-in multiplier
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 const lerp = (a, b, t) => a + (b - a) * t;
-// Continuous turn around Y — disabled for users who prefer reduced motion.
-const SPIN_SPEED = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 0.7;
-const clock = new THREE.Clock();
 
-/* Pop-in: scale up in place inside the hero with a springy overshoot. */
-gsap.to(entrance, { s: 1, duration: 0.9, ease: "back.out(2.2)", delay: 0.25 });
+/* Pop-in: scale up in place inside the hero with a springy overshoot.
+ * Each tween tick requests a single frame; once it completes there is
+ * nothing left to animate, so rendering stops until the next scroll. */
+gsap.to(entrance, {
+  s: 1,
+  duration: 0.9,
+  ease: "back.out(2.2)",
+  delay: 0.25,
+  onUpdate: scheduleRender,
+  onComplete: scheduleRender,
+});
 
 /* ------------------------------------------------------------------ *
  *  Render loop — position is derived from scroll every frame, so the
@@ -182,16 +188,10 @@ gsap.to(entrance, { s: 1, duration: 0.9, ease: "back.out(2.2)", delay: 0.25 });
  *  there, then scroll up out of view together WITH section 2 (no fade),
  *  and only ever move while the scrollbar moves.
  * ------------------------------------------------------------------ */
-const FRAME_MS = 1000 / 30; // throttle to ~30fps
 let rafId = null;
-let running = false;
-let lastFrame = 0;
 
-// True while the animation is anywhere near the viewport.
-function inRange() {
-  return window.scrollY <= s2Scroll + window.innerHeight * 1.15;
-}
-
+// Draw one frame for the current scroll position. No continuous loop —
+// the utensils are static once settled, so we only redraw on change.
 function renderFrame() {
   const y = window.scrollY;
   const p1 = clamp01(y / Math.max(s2Scroll, 1));          // hero -> section 2
@@ -201,53 +201,35 @@ function renderFrame() {
   const baseY = lerp(0.1, 0.0, p1) + p2 * (halfH + 2.0);
   const rot = lerp(HERO_ROT, 0, p1);
   const s = BASE_SCALE * entrance.s;
-  const spin = clock.getElapsedTime() * SPIN_SPEED;
 
   fork.position.set(-baseX, baseY, 0);
   knife.position.set(baseX, baseY, 0);
   fork.rotation.z = THREE.MathUtils.degToRad(-rot);
   knife.rotation.z = THREE.MathUtils.degToRad(rot);
-  fork.rotation.y = spin;
-  knife.rotation.y = -spin;
   fork.scale.setScalar(s);
   knife.scale.setScalar(s);
 
   renderer.render(scene, camera);
 }
 
-function loop(ts) {
-  if (!running) return;
-  if (!inRange()) { stop(); return; }      // scrolled away -> go idle
-  rafId = requestAnimationFrame(loop);
-  if (ts - lastFrame < FRAME_MS) return;   // throttle
-  lastFrame = ts;
-  renderFrame();
-}
-
-function start() {
-  if (running || document.hidden || !inRange()) return;
-  running = true;
-  lastFrame = 0;
-  rafId = requestAnimationFrame(loop);
-}
-
-function stop() {
-  running = false;
-  if (rafId) cancelAnimationFrame(rafId);
-  rafId = null;
+// Coalesce many triggers (scroll / tween ticks) into one frame.
+function scheduleRender() {
+  if (rafId !== null) return;
+  rafId = requestAnimationFrame(() => {
+    rafId = null;
+    renderFrame();
+  });
 }
 
 computeView();
-start();
+scheduleRender(); // initial paint
 
-/* Wake the loop only when it could matter. */
-window.addEventListener("scroll", start, { passive: true });
-document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+window.addEventListener("scroll", scheduleRender, { passive: true });
 
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
   computeView();
-  if (running) renderFrame();
+  scheduleRender();
 });
