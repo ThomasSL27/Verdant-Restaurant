@@ -52,8 +52,10 @@ const insta = [
 <Layout
   preloadImage="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=2000&q=80"
 >
-  <!-- 3D fork + knife overlay -->
-  <canvas id="cutlery-canvas" aria-hidden="true"></canvas>
+  {/* 3D fork + knife overlay — temporarily disabled to test performance.
+     To re-enable: uncomment the canvas below and the import script at the
+     bottom of this file. */}
+  {/* <canvas id="cutlery-canvas" aria-hidden="true"></canvas> */}
 
   <!-- 1. HERO -->
   <section class="hero" id="hero">
@@ -179,10 +181,9 @@ const insta = [
     </div>
   </section>
 
+  {/* 3D utensils loader — temporarily disabled to test performance.
+     To re-enable, uncomment this script (and the canvas above).
   <script>
-    // Load the 3D utensils only on larger screens, and only after the page
-    // has finished loading and the main thread is idle — so the heavy
-    // Three.js bundle never competes with first paint / interactivity.
     const wantsCutlery =
       !window.matchMedia("(max-width: 720px)").matches &&
       !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -197,4 +198,5 @@ const insta = [
       else window.addEventListener("load", load, { once: true });
     }
   </script>
+  */}
 </Layout>
