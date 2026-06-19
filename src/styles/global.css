@@ -171,37 +171,31 @@ section {
   to { opacity: 1; transform: none; }
 }
 
-/* ----------  Decorative SVG utensils (drop in + float)  ---------- */
-.util {
+/* ----------  Drifting embers (atmosphere, compositor-only)  ---------- */
+.embers {
   position: absolute;
-  top: 15vh;
+  inset: 0;
   z-index: 1;
-  width: clamp(34px, 4.5vw, 58px);
-  color: var(--mocha-light);
-  opacity: 0;
+  overflow: hidden;
   pointer-events: none;
-  filter: drop-shadow(0 14px 30px rgba(0, 0, 0, 0.45));
 }
-.util svg { display: block; width: 100%; height: auto; }
-.util-left  { left: 7vw;  animation: dropLeft 1.5s cubic-bezier(0.22, 0.68, 0.2, 1) 0.3s both; }
-.util-right { right: 7vw; animation: dropRight 1.5s cubic-bezier(0.22, 0.68, 0.2, 1) 0.45s both; }
-.util-inner { animation: utilFloat 7s ease-in-out 2.1s infinite; will-change: transform; }
-
-@keyframes dropLeft {
-  0%   { opacity: 0; transform: translateY(-135vh) rotate(-24deg); }
-  65%  { opacity: 0.9; }
-  100% { opacity: 0.9; transform: translateY(0) rotate(-7deg); }
+.ember {
+  position: absolute;
+  bottom: -24px;
+  width: var(--size, 3px);
+  height: var(--size, 3px);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(228, 184, 124, 0.95) 0%, rgba(169, 132, 103, 0.35) 60%, transparent 72%);
+  opacity: 0;
+  animation: emberRise var(--dur, 11s) linear var(--delay, 0s) infinite;
+  will-change: transform, opacity;
 }
-@keyframes dropRight {
-  0%   { opacity: 0; transform: translateY(-135vh) rotate(22deg); }
-  65%  { opacity: 0.85; }
-  100% { opacity: 0.85; transform: translateY(0) rotate(7deg); }
+@keyframes emberRise {
+  0%   { opacity: 0;    transform: translate3d(0, 0, 0) scale(0.5); }
+  12%  { opacity: 0.85; }
+  70%  { opacity: 0.55; }
+  100% { opacity: 0;    transform: translate3d(var(--drift, 0), -94vh, 0) scale(1.15); }
 }
-@keyframes utilFloat {
-  0%, 100% { transform: translateY(0); }
-  50%      { transform: translateY(-14px); }
-}
-@media (max-width: 860px) { .util { display: none; } }
 
 /* ----------  Scroll reveal (only active when JS runs)  ---------- */
 .js .reveal {
@@ -219,8 +213,11 @@ section {
 
 .hero h1 {
   font-size: clamp(3.5rem, 13vw, 11rem);
-  color: var(--cream);
-  text-shadow: 0 4px 40px rgba(0,0,0,0.5);
+  background: linear-gradient(180deg, #f5edde 0%, var(--cream) 45%, #cdbb9c 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 6px 30px rgba(0, 0, 0, 0.55));
 }
 
 .hero p.tag {
