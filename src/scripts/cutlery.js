@@ -8,7 +8,7 @@ import { gsap } from "gsap";
 // This module is only imported on non-mobile screens (see index.astro).
 const canvas = document.getElementById("cutlery-canvas");
 const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5)); // cap fill cost
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure = 1.05;
@@ -182,43 +182,72 @@ gsap.to(entrance, { s: 1, duration: 0.9, ease: "back.out(2.2)", delay: 0.25 });
  *  there, then scroll up out of view together WITH section 2 (no fade),
  *  and only ever move while the scrollbar moves.
  * ------------------------------------------------------------------ */
-function tick() {
+const FRAME_MS = 1000 / 30; // throttle to ~30fps
+let rafId = null;
+let running = false;
+let lastFrame = 0;
+
+// True while the animation is anywhere near the viewport.
+function inRange() {
+  return window.scrollY <= s2Scroll + window.innerHeight * 1.15;
+}
+
+function renderFrame() {
   const y = window.scrollY;
   const p1 = clamp01(y / Math.max(s2Scroll, 1));          // hero -> section 2
   const p2 = clamp01((y - s2Scroll) / window.innerHeight); // section 2 -> exit upward
 
-  const heroX = halfW * HERO_FRAC;
-  const s2X = halfW * S2_FRAC;
-  const baseX = lerp(heroX, s2X, p1);
-  const exitY = p2 * (halfH + 2.0); // lift up with the leaving section
-  const baseY = lerp(0.1, 0.0, p1) + exitY;
+  const baseX = lerp(halfW * HERO_FRAC, halfW * S2_FRAC, p1);
+  const baseY = lerp(0.1, 0.0, p1) + p2 * (halfH + 2.0);
   const rot = lerp(HERO_ROT, 0, p1);
-
   const s = BASE_SCALE * entrance.s;
-
   const spin = clock.getElapsedTime() * SPIN_SPEED;
+
   fork.position.set(-baseX, baseY, 0);
   knife.position.set(baseX, baseY, 0);
   fork.rotation.z = THREE.MathUtils.degToRad(-rot);
   knife.rotation.z = THREE.MathUtils.degToRad(rot);
-  fork.rotation.y = spin;   // continuous spin around the vertical axis
-  knife.rotation.y = -spin; // opposite direction
+  fork.rotation.y = spin;
+  knife.rotation.y = -spin;
   fork.scale.setScalar(s);
   knife.scale.setScalar(s);
 
   renderer.render(scene, camera);
-  requestAnimationFrame(tick);
+}
+
+function loop(ts) {
+  if (!running) return;
+  if (!inRange()) { stop(); return; }      // scrolled away -> go idle
+  rafId = requestAnimationFrame(loop);
+  if (ts - lastFrame < FRAME_MS) return;   // throttle
+  lastFrame = ts;
+  renderFrame();
+}
+
+function start() {
+  if (running || document.hidden || !inRange()) return;
+  running = true;
+  lastFrame = 0;
+  rafId = requestAnimationFrame(loop);
+}
+
+function stop() {
+  running = false;
+  if (rafId) cancelAnimationFrame(rafId);
+  rafId = null;
 }
 
 computeView();
-tick();
+start();
 
-/* ------------------------------------------------------------------ *
- *  Resize
- * ------------------------------------------------------------------ */
+/* Wake the loop only when it could matter. */
+window.addEventListener("scroll", start, { passive: true });
+document.addEventListener("visibilitychange", () => (document.hidden ? stop() : start()));
+
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
   computeView();
+  if (running) renderFrame();
 });

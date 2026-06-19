@@ -180,9 +180,21 @@ const insta = [
   </section>
 
   <script>
-    // Load the 3D utensils only on larger screens.
-    if (!window.matchMedia("(max-width: 720px)").matches) {
-      import("../scripts/cutlery.js");
+    // Load the 3D utensils only on larger screens, and only after the page
+    // has finished loading and the main thread is idle — so the heavy
+    // Three.js bundle never competes with first paint / interactivity.
+    const wantsCutlery =
+      !window.matchMedia("(max-width: 720px)").matches &&
+      !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if (wantsCutlery) {
+      const load = () =>
+        ("requestIdleCallback" in window
+          ? requestIdleCallback(() => import("../scripts/cutlery.js"), { timeout: 3000 })
+          : setTimeout(() => import("../scripts/cutlery.js"), 400));
+
+      if (document.readyState === "complete") load();
+      else window.addEventListener("load", load, { once: true });
     }
   </script>
 </Layout>
